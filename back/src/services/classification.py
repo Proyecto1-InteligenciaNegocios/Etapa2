@@ -96,10 +96,11 @@ def classify_multiple_texts(texts_df: pd.DataFrame) -> pd.DataFrame:
         limpio = removerTodos(texts_df[column_name].iloc[i])
         texts_df[column_name].iloc[i] = limpio
 
-    # pipeline = load('ods_classifier.pkl')
-    # sdg_column = pipeline.predict(new_X)
-    # texts_df["sdg"] = sdg_column
-    # texts_df["prep_text"] = new_X
+    new_X = texts_df[column_name]
+    pipeline = load('model.joblib')
+    class_column = pipeline.predict(new_X)
+    texts_df["Class"] = class_column
+    texts_df["Review"] = new_X
     return texts_df
 
 def classify_single_text(text: str) -> int:
