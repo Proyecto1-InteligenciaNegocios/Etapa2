@@ -10,7 +10,7 @@ class App extends Component {
 
   consultarApi = () => {
     const comentario = this.state.comentario;
-    const url = 'http://localhost:8000/excerpts';
+    const url = 'http://localhost:8000/predict';
     fetch(url, {
       method: 'POST',
       headers: {
