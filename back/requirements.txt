@@ -1,0 +1,11 @@
+--upgrade pip
+es_core_news_sm
+spacy
+Scikit-learn
+ydata_profiling
+seaborn
+ydata_profiling
+matplotlib
+nltk
+langdetect
+uvicorn==0.23.2
