@@ -8,3 +8,5 @@ matplotlib
 nltk
 langdetect
 uvicorn==0.23.2
+npm
+node
