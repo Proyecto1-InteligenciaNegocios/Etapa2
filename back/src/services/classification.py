@@ -21,11 +21,6 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 
-from imblearn.over_sampling import SMOTE
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import KFold
-
 from sklearn.ensemble import RandomForestClassifier
 
 import sklearn

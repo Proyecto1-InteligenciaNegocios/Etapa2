@@ -1,4 +1,3 @@
---upgrade pip
 es_core_news_sm
 spacy
 Scikit-learn
