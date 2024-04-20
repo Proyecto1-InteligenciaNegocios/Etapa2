@@ -44,6 +44,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 from sklearn.pipeline import Pipeline
 from joblib import dump, load
+import io
 
 def definirStopwords():
     palabrasEliminar = set(stopwords.words('spanish'))
@@ -62,12 +63,9 @@ def removerTodos(texto):
 
     #Eliminacion signos de puntuacion
     texto = texto.translate(str.maketrans(string.punctuation, ' '*len(string.punctuation)))
-
     #Tokenizacion
     palabras = nltk.word_tokenize(texto)
-
     palabrasEliminar = definirStopwords()
-
     #Lematizador
     lemas = []
     for palabra in palabras:
@@ -83,7 +81,35 @@ def removerTodos(texto):
                     lemas.append(lema)
     return lemas
 
-def classify_multiple_texts(texts_df: pd.DataFrame) -> pd.DataFrame:
+def vectorizacion(texto):
+    df = pd.read_csv('BagOfWords.csv', sep=',', encoding = 'utf-8')
+    vectorizado = texto.map(str)
+    count = CountVectorizer()
+    bag_of_words = count.fit_transform(vectorizado)
+    bag_of_words_array = bag_of_words.toarray()
+    bag_of_words_df = pd.DataFrame(bag_of_words_array, columns=count.get_feature_names_out())
+    bag_of_words_df["Class"] = float('nan')
+    
+    result_df = pd.DataFrame(columns=df.columns)
+
+    for col in df.columns:
+        if col in count.get_feature_names_out():
+            result_df[col] = bag_of_words_df[col]
+        else:
+            result_df[col] = 0  # Fill with 0 for empty columns
+
+    # Fill in the remaining columns (not in selected_columns) with 0
+    for col in result_df.columns:
+        if col not in df.columns:
+            result_df[col] = 0
+
+    result_df = result_df.fillna(int(0))
+
+
+def classify_multiple_texts(texto) -> pd.DataFrame:
+    if not isinstance(texto, pd.DataFrame):
+        texts_df = pd.DataFrame([texto], columns=['Review'])
+
     df_columns = texts_df.columns
 
     if len(df_columns) > 1:
@@ -96,6 +122,8 @@ def classify_multiple_texts(texts_df: pd.DataFrame) -> pd.DataFrame:
         limpio = removerTodos(texts_df[column_name].iloc[i])
         texts_df[column_name].iloc[i] = limpio
 
+    vectorizacion(text_df)
+
     new_X = texts_df[column_name]
     pipeline = load('model.joblib')
     class_column = pipeline.predict(new_X)
@@ -104,7 +132,10 @@ def classify_multiple_texts(texts_df: pd.DataFrame) -> pd.DataFrame:
     return texts_df
 
 def classify_single_text(text: str) -> int:
-    pipeline = load('ods_classifier.pkl')
+    if not isinstance(texto, pd.DataFrame):
+        texts_df = pd.DataFrame([texto], columns=['Review'])
+        
+    pipeline = load('model.joblib')
     preprocessed_text = removerTodos(text)
-
+    
     return pipeline.predict([preprocessed_text])[0], preprocessed_text
